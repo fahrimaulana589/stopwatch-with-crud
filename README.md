@@ -13,6 +13,4 @@ Dengan antarmuka yang intuitif dan fitur yang mudah digunakan, "Soki Stopwatch" 
 
 Tidak perlu repot lagi dengan catatan manual yang ketinggalan zaman. Ayo, bergabunglah dengan komunitas "Soki Stopwatch" sekarang juga dan nikmati kemudahan dalam mengelola pencatatan rekor olahraga Anda.
 
-Untuk informasi lebih lanjut, kunjungi [sala.com](sala.com).
-
 Dengan "Soki Stopwatch", rekam prestasi olahraga Anda dengan presisi dan konsistensi yang tak tertandingi.
