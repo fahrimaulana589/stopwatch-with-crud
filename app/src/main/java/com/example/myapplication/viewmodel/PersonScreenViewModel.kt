@@ -17,6 +17,7 @@ import com.example.myapplication.views.components.TitleState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -149,17 +150,21 @@ class PersonScreenViewModel(private val personRepository: PersonRepository) : Vi
             Log.e("person", "deletePerson: ", )
             personRepository.delete(_formAddedit.value.person,ValidationState(
                 onSuccess = {
-                    closeModalDelete()
                     getAllPerson()
+                    closeModalDelete()
                 },
                 onFailure = {
+                    var error = ""
                     for ((message, path) in it) {
                         when {
                             path.toString().contains("[person_id]") -> {
-                                Log.e("person", "deletePersonError: "+message, )
+                                error += "$message, "
                             }
                         }
                     }
+                    _confirmDelete.value = _confirmDelete.value.copy(
+                        message = "Error : $error"
+                    )
                 }
             ))
         }

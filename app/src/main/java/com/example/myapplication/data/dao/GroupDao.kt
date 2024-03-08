@@ -41,4 +41,7 @@ interface GroupDao {
 
     @Delete
     fun deletePersonIntGroup(groupPersonEntity: GroupPersonEntity)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM LapGroupEntity WHERE group_id = :groupId)")
+    fun isGroupConnectedToLap(groupId: Int): Boolean
 }

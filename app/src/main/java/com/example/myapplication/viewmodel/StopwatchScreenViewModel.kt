@@ -7,6 +7,7 @@ import com.example.myapplication.data.datastore.AutoTextByWidth
 import com.example.myapplication.data.datastore.DataStoreManager
 import com.example.myapplication.data.datastore.TextStopwatch
 import com.example.myapplication.data.dto.LapDto
+import com.example.myapplication.data.dto.PersonDto
 import com.example.myapplication.data.dto.RecordDto
 import com.example.myapplication.data.dto.RecordWithPersonDto
 import com.example.myapplication.data.repository.LapRepository
@@ -66,6 +67,10 @@ class StopwatchScreenViewModel(
         RecordWithPersonDto()
     )
 
+    private val _person = MutableStateFlow<List<PersonDto>>(
+        emptyList()
+    )
+
     private val _stateTimeStopwatch = MutableStateFlow(
         StateTimeStopwatch(
             count = "0",
@@ -112,8 +117,9 @@ class StopwatchScreenViewModel(
     }
 
     private fun onRecordClick() {
-        Log.e("Cawi", "onRecordClick: "+_statepPersonList.value.count(), )
-        if(_statepPersonList.value.count() > 0){
+        Log.e("Cawi", "onRecordClick: "+_person.value.count(), )
+        Log.e("Cawi", "onRecordClick: "+records.value.count(), )
+        if(_person.value.count() > records.value.count()){
             CoroutineScope(Dispatchers.IO).launch {
                 recordRepository.add(RecordDto(
                     lap_id = lap.value.lap_id,
@@ -194,6 +200,7 @@ class StopwatchScreenViewModel(
             onUP()
             getAllPerson()
             getAllRecord()
+            _person.value = personRepository.getPersonsLinkedToLap(lapId)
         }
 
     }

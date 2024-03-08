@@ -143,9 +143,25 @@ class GroupScreenViewModel(private val groupRepository: GroupRepository) : ViewM
 
     fun deleteGroup() {
         CoroutineScope(Dispatchers.IO).launch {
-            groupRepository.delete(_formAddedit.value.group)
-            closeModalDelete()
-            getAllGroup()
+            groupRepository.delete(_formAddedit.value.group, ValidationState(
+                onSuccess = {
+                    getAllGroup()
+                    closeModalDelete()
+                },
+                onFailure = {
+                    var error = ""
+                    for ((message, path) in it) {
+                        when {
+                            path.toString().contains("[group_id]") -> {
+                                error += "$message, "
+                            }
+                        }
+                    }
+                    _confirmDelete.value = _confirmDelete.value.copy(
+                        message = "Error : $error"
+                    )
+                }
+            ))
         }
     }
 

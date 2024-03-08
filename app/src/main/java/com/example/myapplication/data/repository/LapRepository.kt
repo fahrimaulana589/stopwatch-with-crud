@@ -125,7 +125,9 @@ class LapRepositoryImpl(private val database: AppDatabase) : LapRepository {
 
     override fun delete(lapDto: LapDto) {
 
-        database.lapDao().findByUidWithGroup(lapDto.lap_id).groups.map {
+        database.recordDao().deleteBylap(lapDto.lap_id)
+
+        database.lapDao().findByUidWithGroup(lapDto.lap_id).groups.forEach {
             val lapgroup = LapGroupEntity(lap_id = lapDto.lap_id, group_id = it.group_id!!)
             database.lapDao().deleteGroupInLap(lapgroup)
         }

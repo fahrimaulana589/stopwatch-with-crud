@@ -1,5 +1,6 @@
 package com.example.myapplication.data.repository
 
+import android.util.Log
 import com.example.myapplication.data.database.AppDatabase
 import com.example.myapplication.data.dto.PersonDto
 import com.example.myapplication.data.dto.validation.accessors.name
@@ -24,6 +25,7 @@ interface PersonRepository {
     fun update(personDto: PersonDto,validationState: ValidationState)
     fun delete(personDto: PersonDto,validationState: ValidationState)
     fun getPersonsLinkedToLapWithoutRecords(lapId: Int): List<PersonDto>
+    fun getPersonsLinkedToLap(lapId: Int): List<PersonDto>
 }
 
 class PersonRepositoryImpl(private val database: AppDatabase) : PersonRepository {
@@ -93,31 +95,42 @@ class PersonRepositoryImpl(private val database: AppDatabase) : PersonRepository
     override fun delete(personDto: PersonDto,validationState: ValidationState) {
         val validatePerson = Validator<PersonDto>{
             person_id.constrain {
-                database.personDao().hasPersonJoinedGroup(personDto.person_id)
+                val result = !database.personDao().hasPersonJoinedGroup(personDto.person_id)
+                Log.e("Person", "delete hasPersonJoinedGroup: "+result, )
+                result
             } otherwise {"sudah tergabung ke group"}
             person_id.constrain {
-                database.personDao().hasPersonJoinedLap(personDto.person_id)
+                val result = !database.personDao().hasPersonJoinedLap(personDto.person_id)
+                Log.e("Person", "delete hasPersonJoinedLap: "+result, )
+                result
             } otherwise {"sudah tergabung ke lap"}
             person_id.constrain {
-                database.personDao().hasPersonRecord(personDto.person_id)
+                val result = !database.personDao().hasPersonRecord(personDto.person_id)
+                Log.e("Person", "delete hasPersonJoinedLap: "+result, )
+                result
             } otherwise {"sudah tergabung ke record"}
         }
 
         when (val result = validatePerson(personDto)){
             is ValidationResult.Success -> {
-                database.personDao().update(PersonEntity(person_id = personDto.person_id,personDto.name))
+                database.personDao().delete(PersonEntity(person_id = personDto.person_id,personDto.name))
+                Log.e("Person", "delete Sucses: "+result, )
                 validationState.onSuccess()
             }
 
             is ValidationResult.Failure -> {
+                Log.e("Person", "delete Fail: "+result.violations, )
                 validationState.onFailure(result.violations)
             }
             else -> {}
         }
-        database.personDao().delete(PersonEntity(person_id = personDto.person_id,personDto.name))
     }
 
     override fun getPersonsLinkedToLapWithoutRecords(lapId: Int): List<PersonDto> {
         return database.personDao().getPersonsLinkedToLapWithoutRecords(lapId)
+    }
+
+    override fun getPersonsLinkedToLap(lapId: Int): List<PersonDto> {
+        return database.personDao().getPersonsLinkedToLap(lapId)
     }
 }
